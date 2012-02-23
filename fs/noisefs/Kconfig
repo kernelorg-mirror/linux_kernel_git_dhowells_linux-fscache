@@ -1,0 +1,20 @@
+config NOISE_FS
+	tristate "Predictable noise-maker filesystem (EXPERIMENTAL)"
+	depends on EXPERIMENTAL
+	help
+	  A debugging filesystem that generates pages of noise in a predictable
+	  pattern based on the fs key, inode number, page number and data
+	  version number.
+
+	  The filesystem borrows from ramfs to provide directory and special
+	  file support; only regular files produce noise.
+
+	  No backing storage is required as data writes merely update the data
+	  version number.  The files can be programmed to automatically update
+	  the data version number every N reads to simulate the effect of
+	  interference by another writer.
+
+	  Export ops are available, so the thing can be NFS exported.
+
+	  To compile this filesystem as a module, choose M here: the module
+	  will be called noisefs.  If unsure, say N.

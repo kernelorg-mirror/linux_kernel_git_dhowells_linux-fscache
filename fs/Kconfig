@@ -173,6 +173,7 @@ config HUGETLB_PAGE
 	def_bool HUGETLBFS
 
 source "fs/configfs/Kconfig"
+source "fs/noisefs/Kconfig"
 
 endmenu
 
