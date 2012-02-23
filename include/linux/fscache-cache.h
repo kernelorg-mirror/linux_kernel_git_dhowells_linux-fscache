@@ -547,10 +547,12 @@ extern void fscache_withdraw_cache(struct fscache_cache *cache);
 extern void fscache_io_error(struct fscache_cache *cache);
 
 extern void fscache_mark_page_cached(struct fscache_retrieval *op,
-				     struct page *page);
+				     struct page *page,
+				     bool should_have_mapping);
 
 extern void fscache_mark_pages_cached(struct fscache_retrieval *op,
-				      struct pagevec *pagevec);
+				      struct pagevec *pagevec,
+				      bool should_have_mapping);
 
 extern bool fscache_object_sleep_till_congested(signed long *timeoutp);
 
