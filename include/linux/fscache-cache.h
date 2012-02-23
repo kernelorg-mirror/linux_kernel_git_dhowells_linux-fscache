@@ -440,6 +440,14 @@ extern const char *fscache_object_states[];
 
 extern void fscache_object_work_func(struct work_struct *work);
 
+#ifdef CONFIG_FSCACHE_OBJECT_LIST
+extern void fscache_objlist_add(struct fscache_object *obj);
+extern void fscache_object_destroy(struct fscache_object *object);
+#else
+#define fscache_object_destroy(object) do {} while(0)
+#define fscache_objlist_add(object) do {} while(0)
+#endif
+
 /**
  * fscache_object_init - Initialise a cache object description
  * @object: Object description
@@ -454,8 +462,6 @@ void fscache_object_init(struct fscache_object *object,
 			 struct fscache_cookie *cookie,
 			 struct fscache_cache *cache)
 {
-	atomic_inc(&cache->object_count);
-
 	object->state = FSCACHE_OBJECT_INIT;
 	spin_lock_init(&object->lock);
 	INIT_LIST_HEAD(&object->cache_link);
@@ -473,16 +479,13 @@ void fscache_object_init(struct fscache_object *object,
 	object->cache = cache;
 	object->cookie = cookie;
 	object->parent = NULL;
+
+	atomic_inc(&cache->object_count);
+	fscache_objlist_add(object);
 }
 
 extern void fscache_object_lookup_negative(struct fscache_object *object);
 extern void fscache_obtained_object(struct fscache_object *object);
-
-#ifdef CONFIG_FSCACHE_OBJECT_LIST
-extern void fscache_object_destroy(struct fscache_object *object);
-#else
-#define fscache_object_destroy(object) do {} while(0)
-#endif
 
 /**
  * fscache_object_destroyed - Note destruction of an object in a cache

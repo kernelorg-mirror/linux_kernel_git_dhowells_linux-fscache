@@ -69,6 +69,7 @@ void fscache_objlist_add(struct fscache_object *obj)
 
 	write_unlock(&fscache_object_list_lock);
 }
+EXPORT_SYMBOL(fscache_objlist_add);
 
 /**
  * fscache_object_destroy - Note that a cache object is about to be destroyed
