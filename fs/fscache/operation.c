@@ -20,6 +20,16 @@
 atomic_t fscache_op_debug_id;
 EXPORT_SYMBOL(fscache_op_debug_id);
 
+static const char *const fscache_op_names[FSCACHE_OP__NR] = {
+	[FSCACHE_OP_UNNAMED]		= "Unnamed",
+	[FSCACHE_OP_INVALIDATE]		= "Invalidate",
+	[FSCACHE_OP_ATTR_CHANGED]	= "AttrChanged",
+	[FSCACHE_OP_ALLOC_PAGE]		= "AllocPage",
+	[FSCACHE_OP_READ_OR_ALLOC_PAGE]	= "ReadOrAllocPage",
+	[FSCACHE_OP_READ_OR_ALLOC_PAGES] = "ReadOrAllocPages",
+	[FSCACHE_OP_WRITE]		= "Write",
+};
+
 /**
  * fscache_enqueue_operation - Enqueue an operation for processing
  * @op: The operation to enqueue
@@ -88,6 +98,7 @@ int fscache_submit_exclusive_op(struct fscache_object *object,
 
 	_enter("{OBJ%x OP%x},", object->debug_id, op->debug_id);
 
+	ASSERTCMP(op->name, >, FSCACHE_OP_UNNAMED);
 	ASSERTCMP(op->state, ==, FSCACHE_OP_ST_INITIALISED);
 	ASSERTCMP(atomic_read(&op->usage), >, 0);
 
@@ -196,6 +207,7 @@ int fscache_submit_op(struct fscache_object *object,
 	_enter("{OBJ%x OP%x},{%u}",
 	       object->debug_id, op->debug_id, atomic_read(&op->usage));
 
+	ASSERTCMP(op->name, >, FSCACHE_OP_UNNAMED);
 	ASSERTCMP(op->state, ==, FSCACHE_OP_ST_INITIALISED);
 	ASSERTCMP(atomic_read(&op->usage), >, 0);
 
@@ -411,6 +423,12 @@ void fscache_put_operation(struct fscache_operation *op)
 		return;
 
 	_debug("PUT OP");
+
+	if (op->state != FSCACHE_OP_ST_COMPLETE &&
+	    op->state != FSCACHE_OP_ST_CANCELLED)
+		printk("FS-Cache: Asserting on %s operation\n",
+		       fscache_op_names[op->name]);
+
 	ASSERTIFCMP(op->state != FSCACHE_OP_ST_COMPLETE,
 		    op->state, ==, FSCACHE_OP_ST_CANCELLED);
 	op->state = FSCACHE_OP_ST_DEAD;

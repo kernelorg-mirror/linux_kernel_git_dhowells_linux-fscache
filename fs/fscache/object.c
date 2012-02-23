@@ -945,6 +945,7 @@ static void fscache_invalidate_object(struct fscache_object *object)
 	}
 
 	fscache_operation_init(op, object->cache->ops->invalidate_object, NULL);
+	op->name = FSCACHE_OP_INVALIDATE;
 	op->flags = FSCACHE_OP_ASYNC | (1 << FSCACHE_OP_EXCLUSIVE);
 
 	spin_lock(&cookie->lock);

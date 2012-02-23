@@ -85,6 +85,17 @@ enum fscache_operation_state {
 	FSCACHE_OP_ST_DEAD		/* Op is now dead */
 };
 
+enum fscache_operation_name {
+	FSCACHE_OP_UNNAMED,
+	FSCACHE_OP_INVALIDATE,
+	FSCACHE_OP_ATTR_CHANGED,
+	FSCACHE_OP_ALLOC_PAGE,
+	FSCACHE_OP_READ_OR_ALLOC_PAGE,
+	FSCACHE_OP_READ_OR_ALLOC_PAGES,
+	FSCACHE_OP_WRITE,
+	FSCACHE_OP__NR
+};
+
 struct fscache_operation {
 	struct work_struct	work;		/* record for async ops */
 	struct list_head	pend_link;	/* link in object->pending_ops */
@@ -99,7 +110,8 @@ struct fscache_operation {
 #define FSCACHE_OP_DEC_READ_CNT	6	/* decrement object->n_reads on destruction */
 #define FSCACHE_OP_KEEP_FLAGS	0x0070	/* flags to keep when repurposing an op */
 
-	enum fscache_operation_state state;
+	enum fscache_operation_state state : 8;
+	enum fscache_operation_name name : 8;
 	atomic_t		usage;
 	unsigned		debug_id;	/* debugging ID */
 

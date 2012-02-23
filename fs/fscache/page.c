@@ -197,6 +197,7 @@ int __fscache_attr_changed(struct fscache_cookie *cookie)
 	}
 
 	fscache_operation_init(op, fscache_attr_changed_op, NULL);
+	op->name = FSCACHE_OP_ATTR_CHANGED;
 	op->flags = FSCACHE_OP_ASYNC | (1 << FSCACHE_OP_EXCLUSIVE);
 
 	spin_lock(&cookie->lock);
@@ -388,6 +389,7 @@ int __fscache_read_or_alloc_page(struct fscache_cookie *cookie,
 		_leave(" = -ENOMEM");
 		return -ENOMEM;
 	}
+	op->op.name = FSCACHE_OP_READ_OR_ALLOC_PAGE;
 	op->n_pages = 1;
 
 	spin_lock(&cookie->lock);
@@ -514,6 +516,7 @@ int __fscache_read_or_alloc_pages(struct fscache_cookie *cookie,
 	op = fscache_alloc_retrieval(mapping, end_io_func, context);
 	if (!op)
 		return -ENOMEM;
+	op->op.name = FSCACHE_OP_READ_OR_ALLOC_PAGES;
 	op->n_pages = *nr_pages;
 
 	spin_lock(&cookie->lock);
@@ -644,6 +647,7 @@ int __fscache_alloc_page(struct fscache_cookie *cookie,
 	op = fscache_alloc_retrieval(page->mapping, NULL, NULL);
 	if (!op)
 		return -ENOMEM;
+	op->op.name = FSCACHE_OP_ALLOC_PAGE;
 	op->n_pages = 1;
 
 	spin_lock(&cookie->lock);
@@ -865,6 +869,7 @@ int __fscache_write_page(struct fscache_cookie *cookie,
 
 	fscache_operation_init(&op->op, fscache_write_op,
 			       fscache_release_write_op);
+	op->op.name = FSCACHE_OP_WRITE;
 	op->op.flags = FSCACHE_OP_ASYNC | (1 << FSCACHE_OP_WAITING);
 
 	ret = radix_tree_preload(gfp & ~__GFP_HIGHMEM);
